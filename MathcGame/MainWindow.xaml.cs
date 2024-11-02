@@ -70,7 +70,7 @@ namespace MathcGame
                 int index = random.Next(animalEmoji.Count);// переменной индекс присваивается случайный индекс из списка эмодзи от 0 до каличнства элементов в списке 
                 string nextEmoji = animalEmoji[index];// переменой типа стринг(строка) присваивается некстЭмодзи из списка из анималЭмодзи присваивается какой-то элемент из списка 
                 textBlock.Text = nextEmoji;// присваивание техтБлоку индекс некстЭмодзи 
-                animalEmoji.RemoveAt(index);// удаление эмодзи из списка элементов 
+                animalEmoji.RemoveAt(index);// удаление эмодзи из списка элементов .
 
             }
 
