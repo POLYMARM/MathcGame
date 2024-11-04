@@ -16,14 +16,30 @@ using System.Windows.Shapes;
 
 namespace MathcGame
 {
-   
+    using System.Windows.Threading;
     public partial class MainWindow : Window
     {
+        DispatcherTimer timer = new DispatcherTimer();// создание нового таймера 
+        int tenthsOfSecondsElapsed;// таймер (отслеживание прошедшего времени)
+        int matchesFound;// количество найденых совпадений
         public MainWindow()
         {
             InitializeComponent();
 
+            timer.Interval = TimeSpan.FromSeconds(.1);
+            timer.Tick += Timer_Tick;
             SetUpGame();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            tenthsOfSecondsElapsed++;
+            timeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
+            if (matchesFound == 8)
+            {
+                timer.Stop();
+                timeTextBlock.Text = timeTextBlock.Text + " - Play again?";
+            }
         }
 
         private void SetUpGame()
@@ -37,19 +53,26 @@ namespace MathcGame
                 "💎", "💎",
                 "🎈", "🎈",
                 "👧", "👧",
-                "🛴", "🛴",
+                "🛴", "🛴", // список 
             };
             Random random = new Random();
 
             foreach (TextBlock textBlock in mainGrid.Children.OfType<TextBlock>())
             {
-                int index = random.Next(animalEmoji.Count);// переменной индекс присваивается случайный индекс из списка эмодзи от 0 до каличнства элементов в списке 
-                string nextEmoji = animalEmoji[index];// переменой типа стринг(строка) присваивается некстЭмодзи из списка из анималЭмодзи присваивается какой-то элемент из списка 
-                textBlock.Text = nextEmoji;// присваивание техтБлоку индекс некстЭмодзи 
-                animalEmoji.RemoveAt(index);// удаление эмодзи из списка элементов 
+                if (textBlock.Name != "timeTextBlock")
+                {
+                    textBlock.Visibility = Visibility.Visible;
+                    int index = random.Next(animalEmoji.Count);// переменной индекс присваивается случайный индекс из списка эмодзи от 0 до каличнства элементов в списке 
+                    string nextEmoji = animalEmoji[index];// переменной типа стринг(строка) присваивается некстЭмодзи из списка анималЭмодзи какой-то элемент из списка 
+                    textBlock.Text = nextEmoji;// присваивание текстБлоку индекс некстЭмодзи 
+                    animalEmoji.RemoveAt(index);// удаление случайного эмодзи из списка элементов 
+
+                }
 
             }
-
+            timer.Start();
+            tenthsOfSecondsElapsed = 0;
+            matchesFound = 0;
         }
         TextBlock lastTextBlockClicked;
         bool findingMatch = false;
@@ -65,6 +88,7 @@ namespace MathcGame
             }
             else if (textBlock.Text == lastTextBlockClicked.Text)
             {
+                matchesFound++;
                 textBlock.Visibility = Visibility.Hidden;
                 findingMatch = false;
             }
@@ -72,6 +96,14 @@ namespace MathcGame
             {
                 lastTextBlockClicked.Visibility = Visibility.Visible;
                 findingMatch = false;
+            }
+        }
+
+        private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (matchesFound == 8) // сбрасывет игру, если были найдены все 8 пар
+            {
+                SetUpGame(); // сбрасывет игру, если были найдены все 8 пар 
             }
         }
     }
